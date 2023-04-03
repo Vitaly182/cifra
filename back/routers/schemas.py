@@ -1,54 +1,54 @@
-from pydantic.dataclasses import dataclass
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
 
 
-@dataclass
-class User:
-    id: int
-    username: str
-    first_name: str
-    last_name: str
-    age: int
-    created_at: datetime
-
-
-class UpdateUserSchema(BaseModel):
+class UserSchema(BaseModel):
     id: Optional[int]
-    username: Optional[str]
+    username: str
     first_name: Optional[str]
     last_name: Optional[str]
-    age: Optional[int]
+    age: int
     created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
 
 
-@dataclass
-class UserList:
+class ExtendedUserSchema(UserSchema):
+    notifications: List['NotificationSchema']
+    class Config:
+        orm_mode = True
+
+
+class UpdateUserSchema(UserSchema):
+    username: Optional[str]
+    age: Optional[int]
+
+
+class UserList(BaseModel):
     count: int
-    users: List[User]
+    users: List[UserSchema]
 
 
+class NotificationSchema(BaseModel):
+    id: int
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
+    message: str
+
+    class Config:
+        orm_mode = True
 
 
-# class UserSchema(BaseModel):
-#     id: int
-#     username: str
-#     first_name: str
-#     last_name: str
-#     age: int
-#     created_at: datetime
+class NotificationList(BaseModel):
+    count: int
+    notifications: List[NotificationSchema]
 
-#     class Config:
-#         schema_extra = {
-#             'example':
-#             {
-#                 'id': 111,
-#                 'username': 'username_111',
-#                 'first_name': 'first_name_111',
-#                 'last_name': 'last_name_111',
-#                 'age': 111,
-#                 'created_at': datetime.now(),
-#             }
-#         }
+
+ExtendedUserSchema.update_forward_refs()
+
+
