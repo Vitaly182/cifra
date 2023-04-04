@@ -6,12 +6,16 @@ from middlewares import RedisMiddleware
 from config import get_settings
 
 
+# async def startup_event():
+#     print('App was started!')
+
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(
         title='Cifra',
         version='0.0.1',
     )
+    # app.on_event("startup")(startup_event)
     app.include_router(user_router)
     app.add_middleware(RedisMiddleware, settings=settings)
     add_pagination(app)
